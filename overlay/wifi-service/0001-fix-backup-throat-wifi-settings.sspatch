@@ -1,0 +1,64 @@
+From b3ff5381a1cc83dedd66b0ec9a28bbef477ec5ed Mon Sep 17 00:00:00 2001
+From: lpws521 <liupan316@hotmail.com>
+Date: Sun, 30 Oct 2016 11:39:44 +0800
+Subject: [PATCH] fix backup throat wifi settings
+
+---
+ .../com/android/server/wifi/WifiServiceImpl.smali  | 43 ++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+
+--- a/wifi-service/smali/com/android/server/wifi/WifiServiceImpl.smali
++++ b/wifi-service/smali/com/android/server/wifi/WifiServiceImpl.smali
+@@ -6385,6 +6385,49 @@
+     invoke-virtual {p2}, Landroid/os/WorkSource;->clearNames()V
+ 
+     :cond_3
++    iget-object v3, p0, Lcom/android/server/wifi/WifiServiceImpl;->mContext:Landroid/content/Context;
++
++    invoke-static {v3, p2}, Lcom/android/server/wifi/WifiServiceInjector;->CheckIfBackgroundScanAllowed(Landroid/content/Context;Landroid/os/WorkSource;)Z
++
++    move-result v3
++
++    if-nez v3, :cond_4
++
++    const-string v3, "WifiService"
++
++    new-instance v4, Ljava/lang/StringBuilder;
++
++    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v5, "uid="
++
++    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    invoke-static {}, Landroid/os/Binder;->getCallingUid()I
++
++    move-result v5
++
++    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    const-string v5, " wifi scan blocked"
++
++    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v4
++
++    invoke-static {v3, v4}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    goto :goto_0
++
++    :cond_4
+     iget-object v3, p0, Lcom/android/server/wifi/WifiServiceImpl;->mWifiStateMachine:Lcom/android/server/wifi/WifiStateMachine;
+ 
+     invoke-static {}, Landroid/os/Binder;->getCallingUid()I
+-- 
+2.5.0
+

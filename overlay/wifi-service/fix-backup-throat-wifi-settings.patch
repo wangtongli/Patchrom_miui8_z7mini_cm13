@@ -1,0 +1,22 @@
+From c632e8ac4cd829b594279ced634d156da9fea5fe Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Thu, 3 Nov 2016 16:56:52 +0800
+Subject: [PATCH] fix-backup-throat-wifi-settings
+
+---
+ .../smali/com/android/server/wifi/WifiServiceImpl$ClientHandler.smali    | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/wifi-service/smali/com/android/server/wifi/WifiServiceImpl$ClientHandler.smali
++++ b/wifi-service/smali/com/android/server/wifi/WifiServiceImpl$ClientHandler.smali
+@@ -103,6 +103,7 @@
+     invoke-static {v3, v4}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     :goto_0
++    invoke-static {p1}, Lcom/android/server/wifi/WifiServiceInjector;->handleClientMessage(Landroid/os/Message;)V
+     return-void
+ 
+     :sswitch_0
+-- 
+1.9.1
+
