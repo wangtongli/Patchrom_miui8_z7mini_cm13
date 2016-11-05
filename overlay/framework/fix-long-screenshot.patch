@@ -1,0 +1,116 @@
+From 48ad60360ecbad67b5d75a8e1fe7a624d190fea9 Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Thu, 3 Nov 2016 14:37:18 +0800
+Subject: [PATCH] fix long screenshot
+
+---
+ .../app/ActivityThread$ApplicationThread.smali     |  3 ++
+ framework/smali/android/app/ActivityThread$H.smali |  2 ++
+ framework/smali/android/app/ActivityThread.smali   | 39 ++++++++++++++++++++++
+ 3 files changed, 44 insertions(+)
+
+--- a/framework/smali/android/app/ActivityThread$ApplicationThread.smali
++++ b/framework/smali/android/app/ActivityThread$ApplicationThread.smali
+@@ -1543,6 +1543,8 @@
+ 
+     invoke-virtual {v0, p1, p2}, Landroid/view/WindowManagerGlobal;->dumpGfxInfo(Ljava/io/FileDescriptor;[Ljava/lang/String;)V
+ 
++    invoke-static {p1, p2}, Lmiui/util/DumpBitmapInfoUtils;->dumpBitmapInfo(Ljava/io/FileDescriptor;[Ljava/lang/String;)V
++
+     return-void
+ .end method
+ 
+--- a/framework/smali/android/app/ActivityThread$H.smali
++++ b/framework/smali/android/app/ActivityThread$H.smali
+@@ -322,6 +322,8 @@
+ 
+     invoke-static {v0, v9, v3}, Landroid/app/ActivityThread;->-wrap11(Landroid/app/ActivityThread;Landroid/app/ActivityThread$ActivityClientRecord;Landroid/content/Intent;)V
+ 
++    invoke-static {}, Landroid/app/ActivityThreadInjector;->clearCachedDrawables()V
++
+     invoke-static {v12, v13}, Landroid/os/Trace;->traceEnd(J)V
+ 
+     goto :goto_0
+--- a/framework/smali/android/app/ActivityThread.smali
++++ b/framework/smali/android/app/ActivityThread.smali
+@@ -5371,6 +5371,8 @@
+     .param p1, "data"    # Landroid/app/ActivityThread$AppBindData;
+ 
+     .prologue
++    invoke-static {}, Landroid/app/ActivityThreadInjector;->raiseThreadPriority()V
++
+     move-object/from16 v0, p1
+ 
+     move-object/from16 v1, p0
+@@ -5497,6 +5499,8 @@
+     invoke-static {v2}, Landroid/view/HardwareRenderer;->disable(Z)V
+ 
+     :cond_1
++    invoke-static {}, Lcom/miui/whetstone/app/WhetstoneAppManager;->setHardwareRendererIfNeeded()V
++
+     move-object/from16 v0, p0
+ 
+     iget-object v2, v0, Landroid/app/ActivityThread;->mProfiler:Landroid/app/ActivityThread$Profiler;
+@@ -6300,6 +6304,26 @@
+     invoke-virtual {v2}, Ldalvik/system/VMRuntime;->clearGrowthLimit()V
+ 
+     :goto_a
++    move-object/from16 v0, p1
++
++    iget-object v2, v0, Landroid/app/ActivityThread$AppBindData;->appInfo:Landroid/content/pm/ApplicationInfo;
++
++    invoke-static {v2}, Lcom/miui/whetstone/app/WhetstoneAppManager;->trimHeapSizeIfNeeded(Landroid/content/pm/ApplicationInfo;)V
++
++    move-object/from16 v0, p1
++
++    iget-object v2, v0, Landroid/app/ActivityThread$AppBindData;->appInfo:Landroid/content/pm/ApplicationInfo;
++
++    iget v2, v2, Landroid/content/pm/ApplicationInfo;->nextActivityTheme:I
++
++    move-object/from16 v0, p1
++
++    iget-object v4, v0, Landroid/app/ActivityThread$AppBindData;->info:Landroid/app/LoadedApk;
++
++    move-object/from16 v0, p0
++
++    invoke-static {v0, v2, v4}, Landroid/app/ActivityThreadInjector;->preloadSubActivity(Landroid/app/ActivityThread;ILandroid/app/LoadedApk;)V
++
+     invoke-static {}, Landroid/os/StrictMode;->allowThreadDiskWrites()Landroid/os/StrictMode$ThreadPolicy;
+ 
+     move-result-object v29
+@@ -11346,6 +11370,8 @@
+     invoke-direct {v1}, Landroid/app/ActivityThread;-><init>()V
+ 
+     .local v1, "thread":Landroid/app/ActivityThread;
++    invoke-static {}, Lcom/miui/whetstone/app/WhetstoneAppManager;->getInstance()Lcom/miui/whetstone/app/WhetstoneAppManager;
++
+     invoke-direct {v1, v3}, Landroid/app/ActivityThread;->attach(Z)V
+ 
+     sget-object v2, Landroid/app/ActivityThread;->sMainThreadHandler:Landroid/os/Handler;
+@@ -16460,6 +16486,15 @@
+     .param p1, "level"    # I
+ 
+     .prologue
++    invoke-static {p1}, Lcom/miui/whetstone/app/WhetstoneAppManager;->handleTrimMemory(I)Z
++
++    move-result v3
++
++    if-eqz v3, :cond_miui_0
++
++    goto :goto_miui_0
++
++    :cond_miui_0
+     const/4 v3, 0x1
+ 
+     const/4 v4, 0x0
+@@ -16499,6 +16534,7 @@
+ 
+     invoke-virtual {v3, p1}, Landroid/view/WindowManagerGlobal;->trimMemory(I)V
+ 
++   :goto_miui_0
+     return-void
+ .end method
+ 
+-- 
+1.9.1
+
