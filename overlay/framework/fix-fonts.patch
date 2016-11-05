@@ -1,0 +1,25 @@
+From b65baaa560c67a902a62444fcc6179fd191bb77f Mon Sep 17 00:00:00 2001
+From: wangtongli <tongliwang@tju.edu.cn>
+Date: Thu, 3 Nov 2016 21:11:12 +0800
+Subject: [PATCH] fix-fonts
+
+---
+ framework/smali/android/webkit/WebView.smali | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/framework/smali/android/webkit/WebView.smali
++++ b/framework/smali/android/webkit/WebView.smali
+@@ -432,6 +432,10 @@
+ 
+     invoke-static {}, Landroid/webkit/CookieSyncManager;->setGetInstanceIsAllowed()V
+ 
++    invoke-static {p0, p1}, Landroid/webkit/WebViewInjector;->initEgretLoader(Landroid/webkit/WebView;Landroid/content/Context;)V
++
++    invoke-static {p1}, Lmiui/content/res/ThemeFontChangeHelper;->markWebViewCreated(Landroid/content/Context;)V
++
+     return-void
+ 
+     :cond_1
+-- 
+1.9.1
+
