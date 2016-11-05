@@ -1,0 +1,28 @@
+From 1a206e30fb1e24f40032ecad37a972d036d94f79 Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Mon, 3 Oct 2016 08:02:44 +0800
+Subject: [PATCH] miui use USER_SETUP_COMPLETE
+
+---
+ services/smali/com/android/server/policy/PhoneWindowManager.smali | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/services/smali/com/android/server/policy/PhoneWindowManager.smali
++++ b/services/smali/com/android/server/policy/PhoneWindowManager.smali
+@@ -19979,11 +19979,11 @@
+ 
+     move-result-object v1
+ 
+-    const-string v2, "cm_setup_wizard_completed"
++    const-string v2, "user_setup_complete"
+ 
+     const/4 v3, -0x2
+ 
+-    invoke-static {v1, v2, v0, v3}, Lcyanogenmod/providers/CMSettings$Secure;->getIntForUser(Landroid/content/ContentResolver;Ljava/lang/String;II)I
++    invoke-static {v1, v2, v0, v3}, Landroid/provider/Settings$Secure;->getIntForUser(Landroid/content/ContentResolver;Ljava/lang/String;II)I
+ 
+     move-result v1
+ 
+-- 
+1.9.1
+
