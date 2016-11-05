@@ -1,0 +1,53 @@
+From 4690ffa42d8d6951075fbd52ab5c2db07e7afbd1 Mon Sep 17 00:00:00 2001
+From: nian0114 <268078545@qq.com>
+Date: Sun, 28 Aug 2016 01:03:23 +0800
+Subject: [PATCH] Support Encrypt
+
+---
+ .../spacemanager/SpaceManagerFactory.smali         | 33 +---------------------
+ 1 file changed, 1 insertion(+), 32 deletions(-)
+
+--- a/SecurityCoreAdd/smali/com/miui/securityspace/spacemanager/SpaceManagerFactory.smali
++++ b/SecurityCoreAdd/smali/com/miui/securityspace/spacemanager/SpaceManagerFactory.smali
+@@ -141,37 +141,10 @@
+ .end method
+ 
+ .method private static supportEncrypt()Z
+-    .locals 3
++    .locals 1
+ 
+-    .prologue
+     const/4 v0, 0x0
+ 
+-    sget-boolean v1, Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z
+-
+-    if-eqz v1, :cond_1
+-
+-    invoke-static {}, Lcom/miui/securityspace/spacemanager/SpaceManagerFactory;->isXiaomi()Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_0
+-
+-    sget-object v1, Lcom/miui/securityspace/spacemanager/SpaceManagerFactory;->DEVICE_NOT_SUPPORT_ENCRYPT:Ljava/util/List;
+-
+-    sget-object v2, Lmiui/os/Build;->DEVICE:Ljava/lang/String;
+-
+-    invoke-interface {v1, v2}, Ljava/util/List;->contains(Ljava/lang/Object;)Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_1
+-
+-    :cond_0
+-    :goto_0
+     return v0
+ 
+-    :cond_1
+-    const/4 v0, 0x1
+-
+-    goto :goto_0
+ .end method
+-- 
+1.9.1
+

@@ -53,3 +53,13 @@ if [ $2 = "$BUILD_OUT/services" ]
 then
     applyPatch "overlay/services"
 fi
+
+if [ $2 = "$BUILD_OUT/telephony-common" ]
+then
+    applyPatch "overlay/telephony-common"
+fi
+
+if [ $2 = "$BUILD_OUT/wifi-service" ]
+then
+    applyPatch "overlay/wifi-service"
+fi
