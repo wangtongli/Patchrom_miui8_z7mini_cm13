@@ -1,0 +1,23 @@
+From ee06fd6e4941a34c146eac67aa8b2b6f9460efc6 Mon Sep 17 00:00:00 2001
+From: lpws521 <liupan316@hotmail.com>
+Date: Sun, 30 Oct 2016 10:21:07 +0800
+Subject: [PATCH 5/5] add Double statusbar lockscreen
+
+---
+ framework/smali/android/provider/Settings$System.smali | 2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/framework/smali/android/provider/Settings$System.smali
++++ b/framework/smali/android/provider/Settings$System.smali
+@@ -170,6 +170,8 @@
+     .end annotation
+ .end field
+ 
++.field public static final DOUBLE_TAP_SLEEP_GESTURE:Ljava/lang/String; = "double_tap_sleep_gesture"
++
+ .field public static final DTMF_TONE_TYPE_WHEN_DIALING:Ljava/lang/String; = "dtmf_tone_type"
+ 
+ .field public static final DTMF_TONE_TYPE_WHEN_DIALING_VALIDATOR:Landroid/provider/Settings$System$Validator;
+-- 
+2.5.0
+
