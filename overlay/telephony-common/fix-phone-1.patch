@@ -1,0 +1,177 @@
+From 824e3fc4b44809f834688626268438ae8ccf6ab0 Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Fri, 30 Sep 2016 15:14:28 +0800
+Subject: [PATCH] fix the phone fc
+
+---
+ .../android/internal/telephony/Connection.smali    | 100 +++++++++++++++++++++
+ .../telephony/SubscriptionController.smali         |  16 ++--
+ 2 files changed, 109 insertions(+), 7 deletions(-)
+
+--- a/telephony-common/smali/com/android/internal/telephony/Connection.smali
++++ b/telephony-common/smali/com/android/internal/telephony/Connection.smali
+@@ -67,6 +67,8 @@
+     .end annotation
+ .end field
+ 
++.field private mLocalVideoCapable:Z
++
+ .field protected mNumberConverted:Z
+ 
+ .field protected mNumberPresentation:I
+@@ -86,6 +88,8 @@
+ 
+ .field public mPreHandoverState:Lcom/android/internal/telephony/Call$State;
+ 
++.field private mRemoteVideoCapable:Z
++
+ .field mUserData:Ljava/lang/Object;
+ 
+ .field private mVideoProvider:Landroid/telecom/Connection$VideoProvider;
+@@ -531,9 +535,27 @@
+     return v0
+ .end method
+ 
++.method public isLocalVideoCapable()Z
++    .locals 1
++
++    .prologue
++    iget-boolean v0, p0, Lcom/android/internal/telephony/Connection;->mLocalVideoCapable:Z
++
++    return v0
++.end method
++
+ .method public abstract isMultiparty()Z
+ .end method
+ 
++.method public isRemoteVideoCapable()Z
++    .locals 1
++
++    .prologue
++    iget-boolean v0, p0, Lcom/android/internal/telephony/Connection;->mRemoteVideoCapable:Z
++
++    return v0
++.end method
++
+ .method public isRinging()Z
+     .locals 1
+ 
+@@ -945,6 +967,84 @@
+     :cond_0
+     return-void
+ .end method
++
++.method public setLocalVideoCapable(Z)V
++    .locals 3
++    .param p1, "capable"    # Z
++
++    .prologue
++    iput-boolean p1, p0, Lcom/android/internal/telephony/Connection;->mLocalVideoCapable:Z
++
++    iget-object v2, p0, Lcom/android/internal/telephony/Connection;->mListeners:Ljava/util/Set;
++
++    invoke-interface {v2}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
++
++    move-result-object v0
++
++    .local v0, "i$":Ljava/util/Iterator;
++    :goto_0
++    invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
++
++    move-result v2
++
++    if-eqz v2, :cond_0
++
++    invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
++
++    move-result-object v1
++
++    check-cast v1, Lcom/android/internal/telephony/Connection$Listener;
++
++    .local v1, "l":Lcom/android/internal/telephony/Connection$Listener;
++    iget-boolean v2, p0, Lcom/android/internal/telephony/Connection;->mLocalVideoCapable:Z
++
++    invoke-interface {v1, v2}, Lcom/android/internal/telephony/Connection$Listener;->onLocalVideoCapabilityChanged(Z)V
++
++    goto :goto_0
++
++    .end local v1    # "l":Lcom/android/internal/telephony/Connection$Listener;
++    :cond_0
++    return-void
++.end method
++
++.method public setRemoteVideoCapable(Z)V
++    .locals 3
++    .param p1, "capable"    # Z
++
++    .prologue
++    iput-boolean p1, p0, Lcom/android/internal/telephony/Connection;->mRemoteVideoCapable:Z
++
++    iget-object v2, p0, Lcom/android/internal/telephony/Connection;->mListeners:Ljava/util/Set;
++
++    invoke-interface {v2}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
++
++    move-result-object v0
++
++    .local v0, "i$":Ljava/util/Iterator;
++    :goto_0
++    invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
++
++    move-result v2
++
++    if-eqz v2, :cond_0
++
++    invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
++
++    move-result-object v1
++
++    check-cast v1, Lcom/android/internal/telephony/Connection$Listener;
++
++    .local v1, "l":Lcom/android/internal/telephony/Connection$Listener;
++    iget-boolean v2, p0, Lcom/android/internal/telephony/Connection;->mRemoteVideoCapable:Z
++
++    invoke-interface {v1, v2}, Lcom/android/internal/telephony/Connection$Listener;->onRemoteVideoCapabilityChanged(Z)V
++
++    goto :goto_0
++
++    .end local v1    # "l":Lcom/android/internal/telephony/Connection$Listener;
++    :cond_0
++    return-void
++.end method
+ 
+ .method public setConverted(Ljava/lang/String;)V
+     .locals 1
+--- a/telephony-common/smali/com/android/internal/telephony/SubscriptionController.smali
++++ b/telephony-common/smali/com/android/internal/telephony/SubscriptionController.smali
+@@ -863,19 +863,21 @@
+     move-result-object v14
+ 
+     .local v14, "countryIso":Ljava/lang/String;
+-    const-string v1, "user_network_mode"
++    #const-string v1, "user_network_mode"
+ 
+-    move-object/from16 v0, p1
++    #move-object/from16 v0, p1
+ 
+-    invoke-interface {v0, v1}, Landroid/database/Cursor;->getColumnIndexOrThrow(Ljava/lang/String;)I
++    #invoke-interface {v0, v1}, Landroid/database/Cursor;->getColumnIndexOrThrow(Ljava/lang/String;)I
+ 
+-    move-result v1
++    #move-result v1
+ 
+-    move-object/from16 v0, p1
++    #move-object/from16 v0, p1
+ 
+-    invoke-interface {v0, v1}, Landroid/database/Cursor;->getInt(I)I
++    #invoke-interface {v0, v1}, Landroid/database/Cursor;->getInt(I)I
+ 
+-    move-result v15
++    #move-result v15
++    
++    const/16 v15, -0x1
+ 
+     .local v15, "userNwMode":I
+     invoke-static {v3}, Landroid/telephony/SubscriptionInfo;->givePrintableIccid(Ljava/lang/String;)Ljava/lang/String;
+-- 
+1.9.1
+
