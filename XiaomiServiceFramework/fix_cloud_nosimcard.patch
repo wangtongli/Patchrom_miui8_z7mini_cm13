@@ -1,0 +1,32 @@
+From 00eeb5b6657c2cd9c3e5b02eec5e1791faf4763c Mon Sep 17 00:00:00 2001
+From: wonitor <wonitor@qq.com>
+Date: Sat, 22 Oct 2016 22:07:52 +0800
+Subject: [PATCH] 12
+
+---
+ .../smali/com/xiaomi/xmsf/activate/SimStateReceiver.smali             | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/XiaomiServiceFramework/smali/com/xiaomi/xmsf/activate/SimStateReceiver.smali
++++ b/XiaomiServiceFramework/smali/com/xiaomi/xmsf/activate/SimStateReceiver.smali
+@@ -55,7 +55,7 @@
+     move-result v0
+ 
+     .local v0, "simIndex":I
+-    if-gez v0, :cond_0
++    if-ltz v0, :cond_0
+ 
+     sget v1, Landroid/os/Build$VERSION;->SDK_INT:I
+ 
+@@ -84,6 +84,8 @@
+     const/4 v0, 0x0
+ 
+     :cond_0
++    const/4 v0, 0x0
++
+     invoke-static {v0, p3}, Lcom/xiaomi/activate/SysEventSink;->onSimStateChanged(IZ)V
+ 
+     :goto_0
+-- 
+2.7.4
+

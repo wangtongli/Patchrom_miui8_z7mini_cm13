@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>
+    <!--whether the device is pad-->
+    <bool name="is_pad">false</bool>
+    <!--whether the device is port by patchrom-->
+    <bool name="is_patchrom">true</bool>
+    <!--whether the device supports button light-->
+    <bool name="support_button_light">false</bool>
+    <!--whether the device supports emulated storage-->
+    <bool name="support_emulated_storage">true</bool>
+    <!--whether the device supports internal sdcard-->
+    <bool name="support_internal_sdcard">false</bool>
+    <!--whether the device has dual sd card-->
+    <bool name="support_dual_sd_card">true</bool>
+    <!--whether the device supports power mode-->
+    <bool name="support_power_mode">true</bool>
+    <!--whether the device supports headset-->
+    <bool name="support_headset">false</bool>
+    <!--whether the device supports screen effect-->
+    <bool name="support_screen_effect">false</bool>
+    <!--the vendor feature, it's value may be qcom,mediatek,leadcore or nvidia-->
+    <string name="vendor">qcom</string>
+</features>

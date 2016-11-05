@@ -1,0 +1,52 @@
+From 2964b1fb6a1c187c80cfcd72b9df082b3e382fde Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Mon, 24 Oct 2016 23:40:15 +0800
+Subject: [PATCH] fix-allowScreenRotation
+
+---
+ .../keyguard/MiuiLockPatternKeyguardView.smali     | 27 +---------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
+
+--- a/MiuiKeyguard/smali/com/android/keyguard/MiuiLockPatternKeyguardView.smali
++++ b/MiuiKeyguard/smali/com/android/keyguard/MiuiLockPatternKeyguardView.smali
+@@ -2074,36 +2074,11 @@
+     .locals 1
+ 
+     .prologue
+-    iget-object v0, p0, Lcom/android/keyguard/MiuiLockPatternKeyguardView;->mLockScreen:Landroid/view/View;
+ 
+-    if-eqz v0, :cond_0
+-
+-    iget-object v0, p0, Lcom/android/keyguard/MiuiLockPatternKeyguardView;->mLockScreen:Landroid/view/View;
+-
+-    instance-of v0, v0, Lcom/android/keyguard/AwesomeLockScreen;
+-
+-    if-eqz v0, :cond_0
+-
+-    iget-object v0, p0, Lcom/android/keyguard/MiuiLockPatternKeyguardView;->mLockScreen:Landroid/view/View;
+-
+-    check-cast v0, Lcom/android/keyguard/AwesomeLockScreen;
+-
+-    invoke-virtual {v0}, Lcom/android/keyguard/AwesomeLockScreen;->allowScreenRotation()Z
+-
+-    move-result v0
+-
+-    if-eqz v0, :cond_1
+-
+-    :cond_0
+-    const/4 v0, 0x1
++    const/4 v0, 0x0
+ 
+-    :goto_0
+     return v0
+ 
+-    :cond_1
+-    const/4 v0, 0x0
+-
+-    goto :goto_0
+ .end method
+ 
+ .method public cleanUp()V
+-- 
+1.9.1
+
