@@ -1552,6 +1552,7 @@
 
     move-result v3
 
+    const/4 v3, 0x0
     .line 196
     .local v3, "defaultMode":I
     new-instance v1, Lcyanogenmod/hardware/LiveDisplayConfig;
