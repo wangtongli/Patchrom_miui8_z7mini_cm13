@@ -1,0 +1,32 @@
+From 6c32bd6f136fa401807393d02053b13d123901dd Mon Sep 17 00:00:00 2001
+From: wangtongli <276792882@qq.com>
+Date: Fri, 7 Oct 2016 23:05:42 +0800
+Subject: [PATCH] fix-network-link
+
+---
+ services/smali/com/android/server/connectivity/NetworkMonitor.smali | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/services/smali/com/android/server/connectivity/NetworkMonitor.smali
++++ b/services/smali/com/android/server/connectivity/NetworkMonitor.smali
+@@ -48,7 +48,7 @@
+ 
+ .field private static DEFAULT_LINGER_DELAY_MS:I = 0x0
+ 
+-.field private static final DEFAULT_SERVER:Ljava/lang/String; = "g.cn"
++.field private static final DEFAULT_SERVER:Ljava/lang/String; = "connect.rom.miui.com"
+ 
+ .field public static final EVENT_NETWORK_LINGER_COMPLETE:I = 0x82005
+ 
+@@ -555,7 +555,7 @@
+ 
+     if-nez v0, :cond_0
+ 
+-    const-string v0, "g.cn"
++    const-string v0, "connect.rom.miui.com"
+ 
+     iput-object v0, p0, Lcom/android/server/connectivity/NetworkMonitor;->mServer:Ljava/lang/String;
+ 
+-- 
+1.9.1
+
