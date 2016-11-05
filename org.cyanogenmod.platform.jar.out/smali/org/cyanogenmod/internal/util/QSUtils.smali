@@ -1331,6 +1331,8 @@
 
     move-result v4
 
+    if-eqz v4, :cond_1
+
     invoke-virtual {v3, v4}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
 
     move-result-object v2
