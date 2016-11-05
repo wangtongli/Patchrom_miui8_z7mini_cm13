@@ -32,8 +32,6 @@
 
 .field static final LOG_TAG:Ljava/lang/String; = "GsmSST"
 
-.field private static final MAX_NITZ_YEAR:I = 0x7f5
-
 .field static final PS_DISABLED:I = 0x3ea
 
 .field static final PS_ENABLED:I = 0x3e9
@@ -921,223 +919,141 @@
 .end method
 
 .method private isOperatorConsideredNonRoaming(Landroid/telephony/ServiceState;)Z
-    .locals 8
+    .locals 7
     .param p1, "s"    # Landroid/telephony/ServiceState;
 
     .prologue
-    const v6, 0x107003e
+    const/4 v4, 0x0
 
-    const/4 v5, 0x0
-
-    .line 1667
     invoke-virtual {p1}, Landroid/telephony/ServiceState;->getOperatorNumeric()Ljava/lang/String;
 
     move-result-object v2
 
-    .line 1669
     .local v2, "operatorNumeric":Ljava/lang/String;
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    iget-object v3, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getSubId()I
+    invoke-virtual {v3}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
 
-    move-result v3
+    move-result-object v3
 
-    .line 1670
-    .local v3, "subId":I
-    if-ltz v3, :cond_1
+    invoke-virtual {v3}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
 
-    .line 1671
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    move-result-object v3
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
+    const v5, 0x107003e
 
-    move-result-object v4
-
-    invoke-static {v4, v3}, Landroid/telephony/SubscriptionManager;->getResourcesForSubId(Landroid/content/Context;I)Landroid/content/res/Resources;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v6}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
+    invoke-virtual {v3, v5}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
 
     move-result-object v1
 
-    .line 1678
     .local v1, "numericArray":[Ljava/lang/String;
-    :goto_0
-    array-length v4, v1
+    array-length v3, v1
 
-    if-eqz v4, :cond_0
+    if-eqz v3, :cond_0
 
-    if-nez v2, :cond_2
+    if-nez v2, :cond_1
 
-    .line 1679
     :cond_0
-    return v5
+    return v4
 
-    .line 1674
-    .end local v1    # "numericArray":[Ljava/lang/String;
     :cond_1
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    array-length v5, v1
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
+    move v3, v4
 
-    move-result-object v4
+    :goto_0
+    if-ge v3, v5, :cond_3
 
-    invoke-virtual {v4}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
+    aget-object v0, v1, v3
 
-    move-result-object v4
-
-    invoke-virtual {v4, v6}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
-
-    move-result-object v1
-
-    .restart local v1    # "numericArray":[Ljava/lang/String;
-    goto :goto_0
-
-    .line 1682
-    :cond_2
-    array-length v6, v1
-
-    move v4, v5
-
-    :goto_1
-    if-ge v4, v6, :cond_4
-
-    aget-object v0, v1, v4
-
-    .line 1683
     .local v0, "numeric":Ljava/lang/String;
     invoke-virtual {v2, v0}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
 
-    move-result v7
+    move-result v6
 
-    if-eqz v7, :cond_3
+    if-eqz v6, :cond_2
 
-    .line 1684
-    const/4 v4, 0x1
+    const/4 v3, 0x1
 
-    return v4
+    return v3
 
-    .line 1682
-    :cond_3
-    add-int/lit8 v4, v4, 0x1
+    :cond_2
+    add-int/lit8 v3, v3, 0x1
 
-    goto :goto_1
+    goto :goto_0
 
-    .line 1687
     .end local v0    # "numeric":Ljava/lang/String;
-    :cond_4
-    return v5
+    :cond_3
+    return v4
 .end method
 
 .method private isOperatorConsideredRoaming(Landroid/telephony/ServiceState;)Z
-    .locals 8
+    .locals 7
     .param p1, "s"    # Landroid/telephony/ServiceState;
 
     .prologue
-    const v6, 0x107003f
+    const/4 v4, 0x0
 
-    const/4 v5, 0x0
-
-    .line 1691
     invoke-virtual {p1}, Landroid/telephony/ServiceState;->getOperatorNumeric()Ljava/lang/String;
 
     move-result-object v2
 
-    .line 1693
     .local v2, "operatorNumeric":Ljava/lang/String;
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    iget-object v3, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getSubId()I
+    invoke-virtual {v3}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
 
-    move-result v3
+    move-result-object v3
 
-    .line 1694
-    .local v3, "subId":I
-    if-ltz v3, :cond_1
+    invoke-virtual {v3}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
 
-    .line 1695
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    move-result-object v3
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
+    const v5, 0x107003f
 
-    move-result-object v4
-
-    invoke-static {v4, v3}, Landroid/telephony/SubscriptionManager;->getResourcesForSubId(Landroid/content/Context;I)Landroid/content/res/Resources;
-
-    move-result-object v4
-
-    invoke-virtual {v4, v6}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
+    invoke-virtual {v3, v5}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
 
     move-result-object v1
 
-    .line 1703
     .local v1, "numericArray":[Ljava/lang/String;
-    :goto_0
-    array-length v4, v1
+    array-length v3, v1
 
-    if-eqz v4, :cond_0
+    if-eqz v3, :cond_0
 
-    if-nez v2, :cond_2
+    if-nez v2, :cond_1
 
-    .line 1704
     :cond_0
-    return v5
+    return v4
 
-    .line 1699
-    .end local v1    # "numericArray":[Ljava/lang/String;
     :cond_1
-    iget-object v4, p0, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->mPhone:Lcom/android/internal/telephony/gsm/GSMPhone;
+    array-length v5, v1
 
-    invoke-virtual {v4}, Lcom/android/internal/telephony/gsm/GSMPhone;->getContext()Landroid/content/Context;
+    move v3, v4
 
-    move-result-object v4
+    :goto_0
+    if-ge v3, v5, :cond_3
 
-    invoke-virtual {v4}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
+    aget-object v0, v1, v3
 
-    move-result-object v4
-
-    invoke-virtual {v4, v6}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
-
-    move-result-object v1
-
-    .restart local v1    # "numericArray":[Ljava/lang/String;
-    goto :goto_0
-
-    .line 1707
-    :cond_2
-    array-length v6, v1
-
-    move v4, v5
-
-    :goto_1
-    if-ge v4, v6, :cond_4
-
-    aget-object v0, v1, v4
-
-    .line 1708
     .local v0, "numeric":Ljava/lang/String;
     invoke-virtual {v2, v0}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
 
-    move-result v7
+    move-result v6
 
-    if-eqz v7, :cond_3
+    if-eqz v6, :cond_2
 
-    .line 1709
-    const/4 v4, 0x1
+    const/4 v3, 0x1
 
-    return v4
+    return v3
 
-    .line 1707
-    :cond_3
-    add-int/lit8 v4, v4, 0x1
+    :cond_2
+    add-int/lit8 v3, v3, 0x1
 
-    goto :goto_1
+    goto :goto_0
 
-    .line 1712
     .end local v0    # "numeric":Ljava/lang/String;
-    :cond_4
-    return v5
+    :cond_3
+    return v4
 .end method
 
 .method private isSameNamedOperators(Landroid/telephony/ServiceState;)Z
@@ -2606,54 +2522,6 @@
 
     .line 1831
     .local v24, "year":I
-    const/16 v26, 0x7f5
-
-    move/from16 v0, v24
-
-    move/from16 v1, v26
-
-    if-le v0, v1, :cond_0
-
-    .line 1832
-    new-instance v26, Ljava/lang/StringBuilder;
-
-    invoke-direct/range {v26 .. v26}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string/jumbo v27, "NITZ year: "
-
-    invoke-virtual/range {v26 .. v27}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v26
-
-    move-object/from16 v0, v26
-
-    move/from16 v1, v24
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v26
-
-    const-string/jumbo v27, " exceeds limit, skip NITZ time update"
-
-    invoke-virtual/range {v26 .. v27}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v26
-
-    invoke-virtual/range {v26 .. v26}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v26
-
-    move-object/from16 v0, p0
-
-    move-object/from16 v1, v26
-
-    invoke-virtual {v0, v1}, Lcom/android/internal/telephony/gsm/GsmServiceStateTracker;->loge(Ljava/lang/String;)V
-
-    .line 1833
-    return-void
-
-    .line 1835
-    :cond_0
     const/16 v26, 0x1
 
     move/from16 v0, v26
