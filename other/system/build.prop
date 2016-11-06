@@ -29,7 +29,7 @@ ro.product.cpu.abilist=armeabi-v7a,armeabi
 ro.product.cpu.abilist32=armeabi-v7a,armeabi
 ro.product.cpu.abilist64=
 ro.product.manufacturer=Nubia
-ro.product.locale=zh-CN
+ro.product.locale=en-US
 ro.wifi.channels=
 ro.board.platform=msm8974
 # ro.build.product is obsolete; use ro.product.device

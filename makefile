@@ -3,7 +3,7 @@
 #
 
 PORT_PRODUCT := z7mini_rogue
-
+BUILD_NUMBER  := $(shell date +%Y%m%d)
 # The original zip file, MUST be specified by each product
 local-zip-file     := stockrom.zip
 
@@ -69,6 +69,6 @@ local-pre-zip-misc:
 	@echo goodbye! miui prebuilt binaries!
 	rm -rf $(ZIP_DIR)/system/bin/app_process32_vendor
 	cp -rf stockrom/system/bin/app_process32 $(ZIP_DIR)/system/bin/app_process32
-	
+	sed -i 's/ro.product.locale=en-US/ro.product.locale=zh-CN/g' $(ZIP_DIR)/system/build.prop
 pre-zip-misc:
 	$(TOOLS_DIR)/post_process_props.py out/ZIP/system/build.prop metadata/build.prop	
