@@ -2950,6 +2950,10 @@
 
     .line 803
     .local v16, "destPort":I
+    const-string/jumbo v19, ""
+
+    .line 805
+    .local v19, "address":Ljava/lang/String;
     const/4 v2, 0x1
 
     move/from16 v0, v28
@@ -2987,7 +2991,7 @@
 
     move/from16 v0, v16
 
-    if-ne v0, v2, :cond_b
+    if-ne v0, v2, :cond_c
 
     .line 865
     new-instance v30, Ljava/io/ByteArrayOutputStream;
@@ -3001,7 +3005,7 @@
     array-length v3, v15
 
     :goto_1
-    if-ge v2, v3, :cond_9
+    if-ge v2, v3, :cond_a
 
     aget-object v31, v15, v2
 
@@ -3028,9 +3032,22 @@
 
     move-result-object v31
 
+    .line 871
+    const-string/jumbo v4, ""
+
+    move-object/from16 v0, v19
+
+    if-ne v0, v4, :cond_9
+
+    .line 872
+    invoke-virtual/range {v29 .. v29}, Landroid/telephony/SmsMessage;->getOriginatingAddress()Ljava/lang/String;
+
+    move-result-object v19
+
     .line 877
     .end local v29    # "msg":Landroid/telephony/SmsMessage;
     :cond_1
+    :goto_2
     move-object/from16 v0, v31
 
     array-length v4, v0
@@ -3064,7 +3081,6 @@
     move-result-object v19
 
     .line 814
-    .local v19, "address":Ljava/lang/String;
     invoke-virtual/range {p1 .. p1}, Lcom/android/internal/telephony/InboundSmsTracker;->getReferenceNumber()I
 
     move-result v2
@@ -3161,7 +3177,7 @@
     .line 834
     .restart local v15    # "pdus":[[B
     :cond_5
-    :goto_2
+    :goto_3
     invoke-interface/range {v24 .. v24}, Landroid/database/Cursor;->moveToNext()Z
 
     move-result v2
@@ -3240,7 +3256,7 @@
     .line 847
     move/from16 v16, v32
 
-    goto :goto_2
+    goto :goto_3
 
     .line 855
     .end local v27    # "index":I
@@ -3256,7 +3272,6 @@
     .line 851
     .end local v6    # "whereArgs":[Ljava/lang/String;
     .end local v15    # "pdus":[[B
-    .end local v19    # "address":Ljava/lang/String;
     .end local v23    # "count":Ljava/lang/String;
     .end local v24    # "cursor":Landroid/database/Cursor;
     .end local v25    # "cursorCount":I
@@ -3308,8 +3323,27 @@
     .line 873
     .restart local v12    # "resultReceiver":Lcom/android/internal/telephony/InboundSmsHandler$SmsBroadcastReceiver;
     .restart local v15    # "pdus":[[B
+    .restart local v29    # "msg":Landroid/telephony/SmsMessage;
     .restart local v30    # "output":Ljava/io/ByteArrayOutputStream;
+    .restart local v31    # "pdu":[B
     :cond_9
+    const-string/jumbo v4, ""
+
+    move-object/from16 v0, v19
+
+    if-ne v0, v4, :cond_1
+
+    .line 874
+    invoke-virtual/range {p1 .. p1}, Lcom/android/internal/telephony/InboundSmsTracker;->getAddress()Ljava/lang/String;
+
+    move-result-object v19
+
+    goto/16 :goto_2
+
+    .line 879
+    .end local v29    # "msg":Landroid/telephony/SmsMessage;
+    .end local v31    # "pdu":[B
+    :cond_a
     move-object/from16 v0, p0
 
     iget-object v2, v0, Lcom/android/internal/telephony/InboundSmsHandler;->mWapPush:Lcom/android/internal/telephony/WapPushOverSms;
@@ -3320,7 +3354,9 @@
 
     move-object/from16 v0, p0
 
-    invoke-virtual {v2, v3, v12, v0}, Lcom/android/internal/telephony/WapPushOverSms;->dispatchWapPdu([BLandroid/content/BroadcastReceiver;Lcom/android/internal/telephony/InboundSmsHandler;)I
+    move-object/from16 v1, v19
+
+    invoke-virtual {v2, v3, v12, v0, v1}, Lcom/android/internal/telephony/WapPushOverSms;->dispatchWapPdu([BLandroid/content/BroadcastReceiver;Lcom/android/internal/telephony/InboundSmsHandler;Ljava/lang/String;)I
 
     move-result v35
 
@@ -3355,7 +3391,7 @@
 
     move/from16 v0, v35
 
-    if-ne v0, v2, :cond_a
+    if-ne v0, v2, :cond_b
 
     .line 884
     const/4 v2, 0x1
@@ -3363,7 +3399,7 @@
     return v2
 
     .line 886
-    :cond_a
+    :cond_b
     invoke-virtual/range {p1 .. p1}, Lcom/android/internal/telephony/InboundSmsTracker;->getDeleteWhere()Ljava/lang/String;
 
     move-result-object v2
@@ -3384,7 +3420,7 @@
     .line 891
     .end local v30    # "output":Ljava/io/ByteArrayOutputStream;
     .end local v35    # "result":I
-    :cond_b
+    :cond_c
     move-object/from16 v0, p0
 
     iget-object v2, v0, Lcom/android/internal/telephony/InboundSmsHandler;->mContext:Landroid/content/Context;
@@ -3424,7 +3460,7 @@
 
     move-result v2
 
-    if-nez v2, :cond_c
+    if-nez v2, :cond_d
 
     .line 898
     new-instance v8, Landroid/content/Intent;
@@ -3481,7 +3517,7 @@
     .line 907
     .end local v8    # "intent":Landroid/content/Intent;
     .end local v11    # "options":Landroid/os/Bundle;
-    :cond_c
+    :cond_d
     const/16 v22, 0x0
 
     .line 908
@@ -3504,7 +3540,7 @@
 
     .line 909
     .local v21, "card":Lcom/android/internal/telephony/uicc/UiccCard;
-    if-eqz v21, :cond_d
+    if-eqz v21, :cond_e
 
     .line 911
     move-object/from16 v0, p0
@@ -3531,7 +3567,7 @@
 
     .line 918
     .end local v22    # "carrierPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
-    :goto_3
+    :goto_4
     new-instance v2, Landroid/content/Intent;
 
     const-string/jumbo v3, "android.service.carrier.CarrierMessagingService"
@@ -3546,7 +3582,7 @@
 
     .line 920
     .local v37, "systemPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
-    if-eqz v22, :cond_e
+    if-eqz v22, :cond_f
 
     invoke-interface/range {v22 .. v22}, Ljava/util/List;->size()I
 
@@ -3554,7 +3590,7 @@
 
     const/4 v3, 0x1
 
-    if-ne v2, v3, :cond_e
+    if-ne v2, v3, :cond_f
 
     .line 921
     const-string/jumbo v2, "Found carrier package."
@@ -3607,7 +3643,7 @@
     .line 938
     .end local v13    # "smsFilter":Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilter;
     .end local v36    # "smsFilterCallback":Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilterCallback;
-    :goto_4
+    :goto_5
     const/4 v2, 0x1
 
     return v2
@@ -3615,20 +3651,20 @@
     .line 914
     .end local v37    # "systemPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
     .restart local v22    # "carrierPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
-    :cond_d
+    :cond_e
     const-string/jumbo v2, "UiccCard not initialized."
 
     move-object/from16 v0, p0
 
     invoke-virtual {v0, v2}, Lcom/android/internal/telephony/InboundSmsHandler;->loge(Ljava/lang/String;)V
 
-    goto :goto_3
+    goto :goto_4
 
     .line 926
     .end local v22    # "carrierPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
     .restart local v37    # "systemPackages":Ljava/util/List;, "Ljava/util/List<Ljava/lang/String;>;"
-    :cond_e
-    if-eqz v37, :cond_f
+    :cond_f
+    if-eqz v37, :cond_10
 
     invoke-interface/range {v37 .. v37}, Ljava/util/List;->size()I
 
@@ -3636,7 +3672,7 @@
 
     const/4 v3, 0x1
 
-    if-ne v2, v3, :cond_f
+    if-ne v2, v3, :cond_10
 
     .line 927
     const-string/jumbo v2, "Found system package."
@@ -3686,12 +3722,12 @@
 
     invoke-virtual {v13, v2, v0}, Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilter;->filterSms(Ljava/lang/String;Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilterCallback;)V
 
-    goto :goto_4
+    goto :goto_5
 
     .line 933
     .end local v13    # "smsFilter":Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilter;
     .end local v36    # "smsFilterCallback":Lcom/android/internal/telephony/InboundSmsHandler$CarrierSmsFilterCallback;
-    :cond_f
+    :cond_10
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -3741,7 +3777,7 @@
 
     invoke-virtual {v0, v15, v2, v1, v12}, Lcom/android/internal/telephony/InboundSmsHandler;->dispatchSmsDeliveryIntent([[BLjava/lang/String;ILandroid/content/BroadcastReceiver;)V
 
-    goto :goto_4
+    goto :goto_5
 .end method
 
 .method releaseWakeLock()V

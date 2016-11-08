@@ -1500,24 +1500,84 @@
     throw v0
 .end method
 
-.method private isSubInfoReady()Z
-    .locals 2
+.method private isSingleSimActiveOnMSIM()Z
+    .locals 4
 
     .prologue
-    const/4 v0, 0x0
+    const/4 v2, 0x0
 
-    sget-object v1, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
+    const/4 v1, 0x1
 
-    invoke-interface {v1}, Ljava/util/Map;->size()I
+    .line 195
+    invoke-static {}, Lcom/android/internal/telephony/PhoneFactory;->getSubscriptionInfoUpdater()Lcom/android/internal/telephony/SubscriptionInfoUpdater;
 
-    move-result v1
+    move-result-object v0
 
-    if-lez v1, :cond_0
+    .line 196
+    .local v0, "subUpdater":Lcom/android/internal/telephony/SubscriptionInfoUpdater;
+    if-eqz v0, :cond_1
 
-    const/4 v0, 0x1
+    invoke-virtual {v0}, Lcom/android/internal/telephony/SubscriptionInfoUpdater;->getInsertedSimCount()I
+
+    move-result v3
+
+    if-ne v3, v1, :cond_1
+
+    .line 197
+    invoke-virtual {p0}, Lcom/android/internal/telephony/SubscriptionController;->getActiveSubInfoCountMax()I
+
+    move-result v3
+
+    if-le v3, v1, :cond_0
+
+    .line 196
+    :goto_0
+    return v1
 
     :cond_0
-    return v0
+    move v1, v2
+
+    .line 197
+    goto :goto_0
+
+    :cond_1
+    move v1, v2
+
+    .line 196
+    goto :goto_0
+.end method
+
+.method private isSubInfoReady()Z
+    .locals 4
+
+    .prologue
+    const/4 v1, 0x0
+
+    .line 190
+    invoke-static {}, Lcom/android/internal/telephony/PhoneFactory;->getSubscriptionInfoUpdater()Lcom/android/internal/telephony/SubscriptionInfoUpdater;
+
+    move-result-object v0
+
+    .line 191
+    .local v0, "subUpdater":Lcom/android/internal/telephony/SubscriptionInfoUpdater;
+    if-eqz v0, :cond_0
+
+    sget-object v2, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
+
+    invoke-interface {v2}, Ljava/util/Map;->size()I
+
+    move-result v2
+
+    invoke-virtual {v0}, Lcom/android/internal/telephony/SubscriptionInfoUpdater;->getInsertedSimCount()I
+
+    move-result v3
+
+    if-ne v2, v3, :cond_0
+
+    const/4 v1, 0x1
+
+    :cond_0
+    return v1
 .end method
 
 .method private logd(Ljava/lang/String;)V
@@ -1914,6 +1974,29 @@
 
     goto :goto_0
 
+    .line 1505
+    :cond_0
+    return-void
+.end method
+
+.method private updateDataSubNetworkType(II)V
+    .locals 1
+    .param p1, "slotId"    # I
+    .param p2, "subId"    # I
+
+    .prologue
+    .line 1499
+    invoke-static {}, Lcom/android/internal/telephony/PhoneFactory;->getSubscriptionInfoUpdater()Lcom/android/internal/telephony/SubscriptionInfoUpdater;
+
+    move-result-object v0
+
+    .line 1500
+    .local v0, "subscriptionInfoUpdater":Lcom/android/internal/telephony/SubscriptionInfoUpdater;
+    if-eqz v0, :cond_0
+
+    .line 1501
+    invoke-virtual {v0, p1, p2}, Lcom/android/internal/telephony/SubscriptionInfoUpdater;->setDefaultDataSubNetworkType(II)V
+
     .line 1498
     :cond_0
     return-void
@@ -2014,16 +2097,17 @@
 .end method
 
 .method public addSubInfoRecord(Ljava/lang/String;I)I
-    .locals 25
+    .locals 24
     .param p1, "iccId"    # Ljava/lang/String;
     .param p2, "slotId"    # I
 
     .prologue
+    .line 684
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord]+ iccId:"
+    const-string/jumbo v4, "[addSubInfoRecord]+ iccId:"
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2035,7 +2119,7 @@
 
     move-result-object v3
 
-    const-string v4, " slotId:"
+    const-string/jumbo v4, " slotId:"
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2055,21 +2139,25 @@
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
-    const-string v3, "addSubInfoRecord"
+    .line 686
+    const-string/jumbo v3, "addSubInfoRecord"
 
     move-object/from16 v0, p0
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->enforceModifyPhoneState(Ljava/lang/String;)V
 
+    .line 689
     invoke-static {}, Landroid/os/Binder;->clearCallingIdentity()J
 
     move-result-wide v12
 
+    .line 691
     .local v12, "identity":J
     if-nez p1, :cond_0
 
+    .line 692
     :try_start_0
-    const-string v3, "[addSubInfoRecord]- null iccId"
+    const-string/jumbo v3, "[addSubInfoRecord]- null iccId"
 
     move-object/from16 v0, p0
 
@@ -2077,12 +2165,16 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
+    .line 693
     const/4 v3, -0x1
 
+    .line 842
     invoke-static {v12, v13}, Landroid/os/Binder;->restoreCallingIdentity(J)V
 
+    .line 693
     return v3
 
+    .line 696
     :cond_0
     :try_start_1
     move-object/from16 v0, p0
@@ -2093,32 +2185,36 @@
 
     move-result-object v2
 
+    .line 697
     .local v2, "resolver":Landroid/content/ContentResolver;
     sget-object v3, Landroid/telephony/SubscriptionManager;->CONTENT_URI:Landroid/net/Uri;
 
+    .line 698
     const/4 v4, 0x3
 
     new-array v4, v4, [Ljava/lang/String;
 
-    const-string v5, "_id"
+    const-string/jumbo v5, "_id"
 
     const/4 v6, 0x0
 
     aput-object v5, v4, v6
 
-    const-string v5, "sim_id"
+    .line 699
+    const-string/jumbo v5, "sim_id"
 
     const/4 v6, 0x1
 
     aput-object v5, v4, v6
 
-    const-string v5, "name_source"
+    const-string/jumbo v5, "name_source"
 
     const/4 v6, 0x2
 
     aput-object v5, v4, v6
 
-    const-string v5, "icc_id=?"
+    .line 700
+    const-string/jumbo v5, "icc_id=?"
 
     const/4 v6, 0x1
 
@@ -2130,10 +2226,12 @@
 
     const/4 v7, 0x0
 
+    .line 697
     invoke-virtual/range {v2 .. v7}, Landroid/content/ContentResolver;->query(Landroid/net/Uri;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/database/Cursor;
 
     move-result-object v10
 
+    .line 702
     .local v10, "cursor":Landroid/database/Cursor;
     move-object/from16 v0, p0
 
@@ -2151,25 +2249,29 @@
 
     move-result v8
 
+    .line 703
     .local v8, "color":I
-    const/16 v18, 0x0
+    const/16 v17, 0x0
 
-    .local v18, "setDisplayName":Z
-    if-eqz v10, :cond_a
+    .line 705
+    .local v17, "setDisplayName":Z
+    if-eqz v10, :cond_b
 
     :try_start_2
     invoke-interface {v10}, Landroid/database/Cursor;->moveToFirst()Z
 
     move-result v3
 
-    if-eqz v3, :cond_a
+    if-eqz v3, :cond_b
 
+    .line 716
     const/4 v3, 0x0
 
     invoke-interface {v10, v3}, Landroid/database/Cursor;->getInt(I)I
 
     move-result v20
 
+    .line 717
     .local v20, "subId":I
     const/4 v3, 0x1
 
@@ -2177,6 +2279,7 @@
 
     move-result v16
 
+    .line 718
     .local v16, "oldSimInfoId":I
     const/4 v3, 0x2
 
@@ -2184,54 +2287,63 @@
 
     move-result v14
 
+    .line 719
     .local v14, "nameSource":I
-    new-instance v24, Landroid/content/ContentValues;
+    new-instance v23, Landroid/content/ContentValues;
 
-    invoke-direct/range {v24 .. v24}, Landroid/content/ContentValues;-><init>()V
+    invoke-direct/range {v23 .. v23}, Landroid/content/ContentValues;-><init>()V
 
-    .local v24, "value":Landroid/content/ContentValues;
+    .line 721
+    .local v23, "value":Landroid/content/ContentValues;
     move/from16 v0, p2
 
     move/from16 v1, v16
 
     if-eq v0, v1, :cond_1
 
-    const-string v3, "sim_id"
+    .line 722
+    const-string/jumbo v3, "sim_id"
 
     invoke-static/range {p2 .. p2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
     move-result-object v4
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v0, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
 
+    .line 725
     :cond_1
     const/4 v3, 0x2
 
     if-eq v14, v3, :cond_2
 
-    const/16 v18, 0x1
+    .line 726
+    const/16 v17, 0x1
 
+    .line 729
     :cond_2
-    invoke-virtual/range {v24 .. v24}, Landroid/content/ContentValues;->size()I
+    invoke-virtual/range {v23 .. v23}, Landroid/content/ContentValues;->size()I
 
     move-result v3
 
     if-lez v3, :cond_3
 
+    .line 730
     sget-object v3, Landroid/telephony/SubscriptionManager;->CONTENT_URI:Landroid/net/Uri;
 
+    .line 731
     new-instance v4, Ljava/lang/StringBuilder;
 
     invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v5, "_id="
+    const-string/jumbo v5, "_id="
 
     invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v4
 
+    .line 732
     move/from16 v0, v20
 
     int-to-long v6, v0
@@ -2240,6 +2352,7 @@
 
     move-result-object v5
 
+    .line 731
     invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v4
@@ -2248,14 +2361,17 @@
 
     move-result-object v4
 
+    .line 732
     const/4 v5, 0x0
 
-    move-object/from16 v0, v24
+    .line 730
+    move-object/from16 v0, v23
 
     invoke-virtual {v2, v3, v0, v4, v5}, Landroid/content/ContentResolver;->update(Landroid/net/Uri;Landroid/content/ContentValues;Ljava/lang/String;[Ljava/lang/String;)I
 
+    .line 735
     :cond_3
-    const-string v3, "[addSubInfoRecord] Record already exists"
+    const-string/jumbo v3, "[addSubInfoRecord] Record already exists"
 
     move-object/from16 v0, p0
 
@@ -2263,20 +2379,25 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
+    .line 738
     .end local v14    # "nameSource":I
     .end local v16    # "oldSimInfoId":I
     .end local v20    # "subId":I
     :goto_0
     if-eqz v10, :cond_4
 
+    .line 739
     :try_start_3
     invoke-interface {v10}, Landroid/database/Cursor;->close()V
 
+    .line 743
     :cond_4
     sget-object v3, Landroid/telephony/SubscriptionManager;->CONTENT_URI:Landroid/net/Uri;
 
-    const-string v5, "sim_id=?"
+    .line 744
+    const-string/jumbo v5, "sim_id=?"
 
+    .line 745
     const/4 v4, 0x1
 
     new-array v6, v4, [Ljava/lang/String;
@@ -2289,28 +2410,34 @@
 
     aput-object v4, v6, v7
 
+    .line 743
     const/4 v4, 0x0
 
+    .line 745
     const/4 v7, 0x0
 
+    .line 743
     invoke-virtual/range {v2 .. v7}, Landroid/content/ContentResolver;->query(Landroid/net/Uri;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/database/Cursor;
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_1
 
     move-result-object v10
 
-    if-eqz v10, :cond_7
+    .line 747
+    if-eqz v10, :cond_8
 
     :try_start_4
     invoke-interface {v10}, Landroid/database/Cursor;->moveToFirst()Z
 
     move-result v3
 
-    if-eqz v3, :cond_7
+    if-eqz v3, :cond_8
 
+    .line 750
     :cond_5
-    const-string v3, "_id"
+    const-string/jumbo v3, "_id"
 
+    .line 749
     invoke-interface {v10, v3}, Landroid/database/Cursor;->getColumnIndexOrThrow(Ljava/lang/String;)I
 
     move-result v3
@@ -2319,6 +2446,7 @@
 
     move-result v20
 
+    .line 753
     .restart local v20    # "subId":I
     sget-object v3, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
 
@@ -2332,9 +2460,11 @@
 
     check-cast v9, Ljava/lang/Integer;
 
+    .line 754
     .local v9, "currentSubId":Ljava/lang/Integer;
-    if-eqz v9, :cond_c
+    if-eqz v9, :cond_d
 
+    .line 755
     invoke-virtual {v9}, Ljava/lang/Integer;->intValue()I
 
     move-result v3
@@ -2343,21 +2473,23 @@
 
     move-result v3
 
-    if-eqz v3, :cond_c
+    if-eqz v3, :cond_d
 
-    const-string v3, "[addSubInfoRecord] currentSubId != null && currentSubId is valid, IGNORE"
+    .line 795
+    const-string/jumbo v3, "[addSubInfoRecord] currentSubId != null && currentSubId is valid, IGNORE"
 
     move-object/from16 v0, p0
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 799
     :cond_6
     :goto_1
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord] hashmap("
+    const-string/jumbo v4, "[addSubInfoRecord] hashmap("
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2369,7 +2501,7 @@
 
     move-result-object v3
 
-    const-string v4, ","
+    const-string/jumbo v4, ","
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2381,7 +2513,7 @@
 
     move-result-object v3
 
-    const-string v4, ")"
+    const-string/jumbo v4, ")"
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2395,6 +2527,8 @@
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 800
+    :cond_7
     invoke-interface {v10}, Landroid/database/Cursor;->moveToNext()Z
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_2
@@ -2403,44 +2537,49 @@
 
     if-nez v3, :cond_5
 
+    .line 803
     .end local v9    # "currentSubId":Ljava/lang/Integer;
     .end local v20    # "subId":I
-    :cond_7
-    if-eqz v10, :cond_8
+    :cond_8
+    if-eqz v10, :cond_9
 
+    .line 804
     :try_start_5
     invoke-interface {v10}, Landroid/database/Cursor;->close()V
 
-    :cond_8
+    .line 809
+    :cond_9
     move-object/from16 v0, p0
 
     move/from16 v1, p2
 
     invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->getSubId(I)[I
 
-    move-result-object v22
+    move-result-object v21
 
-    .local v22, "subIds":[I
-    if-eqz v22, :cond_9
+    .line 810
+    .local v21, "subIds":[I
+    if-eqz v21, :cond_a
 
-    move-object/from16 v0, v22
+    move-object/from16 v0, v21
 
     array-length v3, v0
 
-    if-nez v3, :cond_13
+    if-nez v3, :cond_11
 
-    :cond_9
+    .line 812
+    :cond_a
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord]- getSubId failed subIds == null || length == 0 subIds="
+    const-string/jumbo v4, "[addSubInfoRecord]- getSubId failed subIds == null || length == 0 subIds="
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    move-object/from16 v0, v22
+    move-object/from16 v0, v21
 
     invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
@@ -2456,79 +2595,90 @@
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_1
 
+    .line 815
     const/4 v3, -0x1
 
+    .line 842
     invoke-static {v12, v13}, Landroid/os/Binder;->restoreCallingIdentity(J)V
 
+    .line 815
     return v3
 
-    .end local v22    # "subIds":[I
-    .end local v24    # "value":Landroid/content/ContentValues;
-    :cond_a
-    const/16 v18, 0x1
+    .line 706
+    .end local v21    # "subIds":[I
+    .end local v23    # "value":Landroid/content/ContentValues;
+    :cond_b
+    const/16 v17, 0x1
 
+    .line 707
     :try_start_6
-    new-instance v24, Landroid/content/ContentValues;
+    new-instance v23, Landroid/content/ContentValues;
 
-    invoke-direct/range {v24 .. v24}, Landroid/content/ContentValues;-><init>()V
+    invoke-direct/range {v23 .. v23}, Landroid/content/ContentValues;-><init>()V
 
-    .restart local v24    # "value":Landroid/content/ContentValues;
-    const-string v3, "icc_id"
+    .line 708
+    .restart local v23    # "value":Landroid/content/ContentValues;
+    const-string/jumbo v3, "icc_id"
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     move-object/from16 v1, p1
 
     invoke-virtual {v0, v3, v1}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
-    const-string v3, "color"
+    .line 710
+    const-string/jumbo v3, "color"
 
     invoke-static {v8}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
     move-result-object v4
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v0, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
 
-    const-string v3, "sim_id"
+    .line 711
+    const-string/jumbo v3, "sim_id"
 
     invoke-static/range {p2 .. p2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
     move-result-object v4
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v0, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/Integer;)V
 
-    const-string v3, "carrier_name"
+    .line 712
+    const-string/jumbo v3, "carrier_name"
 
-    const-string v4, ""
+    const-string/jumbo v4, ""
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v0, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
+    .line 713
     sget-object v3, Landroid/telephony/SubscriptionManager;->CONTENT_URI:Landroid/net/Uri;
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v2, v3, v0}, Landroid/content/ContentResolver;->insert(Landroid/net/Uri;Landroid/content/ContentValues;)Landroid/net/Uri;
 
-    move-result-object v23
+    move-result-object v22
 
-    .local v23, "uri":Landroid/net/Uri;
+    .line 714
+    .local v22, "uri":Landroid/net/Uri;
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord] New record created: "
+    const-string/jumbo v4, "[addSubInfoRecord] New record created: "
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    move-object/from16 v0, v23
+    move-object/from16 v0, v22
 
     invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
@@ -2546,40 +2696,48 @@
 
     goto/16 :goto_0
 
-    .end local v23    # "uri":Landroid/net/Uri;
-    .end local v24    # "value":Landroid/content/ContentValues;
+    .line 737
+    .end local v22    # "uri":Landroid/net/Uri;
+    .end local v23    # "value":Landroid/content/ContentValues;
     :catchall_0
     move-exception v3
 
-    if-eqz v10, :cond_b
+    .line 738
+    if-eqz v10, :cond_c
 
+    .line 739
     :try_start_7
     invoke-interface {v10}, Landroid/database/Cursor;->close()V
 
-    :cond_b
+    .line 737
+    :cond_c
     throw v3
     :try_end_7
     .catchall {:try_start_7 .. :try_end_7} :catchall_1
 
+    .line 841
     .end local v2    # "resolver":Landroid/content/ContentResolver;
     .end local v8    # "color":I
     .end local v10    # "cursor":Landroid/database/Cursor;
-    .end local v18    # "setDisplayName":Z
+    .end local v17    # "setDisplayName":Z
     :catchall_1
     move-exception v3
 
+    .line 842
     invoke-static {v12, v13}, Landroid/os/Binder;->restoreCallingIdentity(J)V
 
+    .line 841
     throw v3
 
+    .line 762
     .restart local v2    # "resolver":Landroid/content/ContentResolver;
     .restart local v8    # "color":I
     .restart local v9    # "currentSubId":Ljava/lang/Integer;
     .restart local v10    # "cursor":Landroid/database/Cursor;
-    .restart local v18    # "setDisplayName":Z
+    .restart local v17    # "setDisplayName":Z
     .restart local v20    # "subId":I
-    .restart local v24    # "value":Landroid/content/ContentValues;
-    :cond_c
+    .restart local v23    # "value":Landroid/content/ContentValues;
+    :cond_d
     :try_start_8
     sget-object v3, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
 
@@ -2593,38 +2751,49 @@
 
     invoke-interface {v3, v4, v5}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
-    invoke-virtual/range {p0 .. p0}, Lcom/android/internal/telephony/SubscriptionController;->getActiveSubInfoCountMax()I
+    .line 763
+    invoke-static {}, Lcom/android/internal/telephony/PhoneFactory;->getSubscriptionInfoUpdater()Lcom/android/internal/telephony/SubscriptionInfoUpdater;
 
-    move-result v21
+    move-result-object v3
 
-    .local v21, "subIdCountMax":I
+    invoke-virtual {v3}, Lcom/android/internal/telephony/SubscriptionInfoUpdater;->getInsertedSimCount()I
+
+    move-result v19
+
+    .line 765
+    .local v19, "simCount":I
     invoke-virtual/range {p0 .. p0}, Lcom/android/internal/telephony/SubscriptionController;->getDefaultSubId()I
 
     move-result v11
 
+    .line 767
     .local v11, "defaultSubId":I
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord] sSlotIdxToSubId.size="
+    const-string/jumbo v4, "[addSubInfoRecord] sSlotIdxToSubId.size="
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
+    .line 768
     sget-object v4, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
 
     invoke-interface {v4}, Ljava/util/Map;->size()I
 
     move-result v4
 
+    .line 767
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    const-string v4, " slotId="
+    .line 769
+    const-string/jumbo v4, " slotId="
 
+    .line 767
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
@@ -2635,8 +2804,10 @@
 
     move-result-object v3
 
-    const-string v4, " subId="
+    .line 769
+    const-string/jumbo v4, " subId="
 
+    .line 767
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
@@ -2647,8 +2818,10 @@
 
     move-result-object v3
 
-    const-string v4, " defaultSubId="
+    .line 770
+    const-string/jumbo v4, " defaultSubId="
 
+    .line 767
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
@@ -2657,13 +2830,15 @@
 
     move-result-object v3
 
-    const-string v4, " simCount="
+    .line 770
+    const-string/jumbo v4, " simCount="
 
+    .line 767
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v3
 
-    move/from16 v0, v21
+    move/from16 v0, v19
 
     invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
@@ -2677,37 +2852,62 @@
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 773
+    invoke-direct/range {p0 .. p0}, Lcom/android/internal/telephony/SubscriptionController;->isSubInfoReady()Z
+
+    move-result v3
+
+    if-eqz v3, :cond_7
+
+    .line 779
     invoke-static {v11}, Landroid/telephony/SubscriptionManager;->isValidSubscriptionId(I)Z
 
     move-result v3
 
-    if-eqz v3, :cond_d
+    if-eqz v3, :cond_e
 
+    .line 780
     const/4 v3, 0x1
 
-    move/from16 v0, v21
+    move/from16 v0, v19
 
-    if-ne v0, v3, :cond_11
+    if-ne v0, v3, :cond_10
 
-    :cond_d
+    .line 781
+    :cond_e
     move-object/from16 v0, p0
 
     move/from16 v1, v20
 
     invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->setDefaultFallbackSubId(I)V
 
+    .line 784
     :goto_2
     const/4 v3, 0x1
 
-    move/from16 v0, v21
+    move/from16 v0, v19
 
-    if-ne v0, v3, :cond_e
+    if-ne v0, v3, :cond_6
 
+    .line 785
+    invoke-static {}, Landroid/telephony/TelephonyManager;->getDefault()Landroid/telephony/TelephonyManager;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Landroid/telephony/TelephonyManager;->getSimCount()I
+
+    move-result v3
+
+    const/4 v4, 0x1
+
+    if-ne v3, v4, :cond_6
+
+    .line 787
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord] one sim set defaults to subId="
+    const-string/jumbo v4, "[addSubInfoRecord] one sim set defaults to subId="
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2727,121 +2927,58 @@
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 789
     move-object/from16 v0, p0
 
     move/from16 v1, v20
 
     invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->setDefaultDataSubId(I)V
 
+    .line 790
     move-object/from16 v0, p0
 
     move/from16 v1, v20
 
     invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->setDefaultSmsSubId(I)V
 
+    .line 791
     move-object/from16 v0, p0
 
     move/from16 v1, v20
 
     invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->setDefaultVoiceSubId(I)V
-
-    :cond_e
-    invoke-static {}, Lcom/android/internal/telephony/SubscriptionController;->getInstance()Lcom/android/internal/telephony/SubscriptionController;
-
-    move-result-object v3
-
-    invoke-virtual/range {p0 .. p0}, Lcom/android/internal/telephony/SubscriptionController;->getDefaultSmsSubId()I
-
-    move-result v4
-
-    invoke-virtual {v3, v4}, Lcom/android/internal/telephony/SubscriptionController;->getPhoneId(I)I
-
-    move-result v17
-
-    .local v17, "phoneId":I
-    if-ltz v17, :cond_f
-
-    invoke-static {}, Landroid/telephony/TelephonyManager;->getDefault()Landroid/telephony/TelephonyManager;
-
-    move-result-object v3
-
-    invoke-virtual {v3}, Landroid/telephony/TelephonyManager;->getPhoneCount()I
-
-    move-result v3
-
-    move/from16 v0, v17
-
-    if-lt v0, v3, :cond_6
-
-    :cond_f
-    const-string v3, "SubscriptionController"
-
-    new-instance v4, Ljava/lang/StringBuilder;
-
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v5, "Subscription is invalid. Set default to "
-
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    move/from16 v0, v20
-
-    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v4
-
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v4
-
-    invoke-static {v3, v4}, Landroid/telephony/Rlog;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    move-object/from16 v0, p0
-
-    move/from16 v1, v20
-
-    invoke-virtual {v0, v1}, Lcom/android/internal/telephony/SubscriptionController;->setDefaultSmsSubId(I)V
-
-    const/4 v3, 0x1
-
-    move/from16 v0, v21
-
-    if-le v0, v3, :cond_12
-
-    const/4 v3, 0x1
-
-    :goto_3
-    invoke-static {v3}, Lcom/android/internal/telephony/PhoneFactory;->setSMSPromptEnabled(Z)V
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_2
 
     goto/16 :goto_1
 
+    .line 802
     .end local v9    # "currentSubId":Ljava/lang/Integer;
     .end local v11    # "defaultSubId":I
-    .end local v17    # "phoneId":I
+    .end local v19    # "simCount":I
     .end local v20    # "subId":I
-    .end local v21    # "subIdCountMax":I
     :catchall_2
     move-exception v3
 
-    if-eqz v10, :cond_10
+    .line 803
+    if-eqz v10, :cond_f
 
+    .line 804
     :try_start_9
     invoke-interface {v10}, Landroid/database/Cursor;->close()V
 
-    :cond_10
+    .line 802
+    :cond_f
     throw v3
     :try_end_9
     .catchall {:try_start_9 .. :try_end_9} :catchall_1
 
+    .line 780
     .restart local v9    # "currentSubId":Ljava/lang/Integer;
     .restart local v11    # "defaultSubId":I
+    .restart local v19    # "simCount":I
     .restart local v20    # "subId":I
-    .restart local v21    # "subIdCountMax":I
-    :cond_11
+    :cond_10
     :try_start_a
     move-object/from16 v0, p0
 
@@ -2851,25 +2988,20 @@
 
     move-result v3
 
-    if-eqz v3, :cond_d
+    if-eqz v3, :cond_e
 
-    goto/16 :goto_2
+    goto :goto_2
 
-    .restart local v17    # "phoneId":I
-    :cond_12
-    const/4 v3, 0x0
-
-    goto :goto_3
-
+    .line 817
     .end local v9    # "currentSubId":Ljava/lang/Integer;
     .end local v11    # "defaultSubId":I
-    .end local v17    # "phoneId":I
+    .end local v19    # "simCount":I
     .end local v20    # "subId":I
-    .end local v21    # "subIdCountMax":I
-    .restart local v22    # "subIds":[I
-    :cond_13
-    if-eqz v18, :cond_14
+    .restart local v21    # "subIds":[I
+    :cond_11
+    if-eqz v17, :cond_12
 
+    .line 818
     :try_start_b
     move-object/from16 v0, p0
 
@@ -2877,50 +3009,57 @@
 
     const/4 v4, 0x0
 
-    aget v4, v22, v4
+    aget v4, v21, v4
 
     invoke-virtual {v3, v4}, Landroid/telephony/TelephonyManager;->getSimOperatorNameForSubscription(I)Ljava/lang/String;
 
-    move-result-object v19
+    move-result-object v18
 
-    .local v19, "simCarrierName":Ljava/lang/String;
-    invoke-static/range {v19 .. v19}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+    .line 821
+    .local v18, "simCarrierName":Ljava/lang/String;
+    invoke-static/range {v18 .. v18}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
 
     move-result v3
 
-    if-nez v3, :cond_16
+    if-nez v3, :cond_13
 
-    move-object/from16 v15, v19
+    .line 822
+    move-object/from16 v15, v18
 
+    .line 827
     .local v15, "nameToSet":Ljava/lang/String;
-    :goto_4
-    new-instance v24, Landroid/content/ContentValues;
+    :goto_3
+    new-instance v23, Landroid/content/ContentValues;
 
-    .end local v24    # "value":Landroid/content/ContentValues;
-    invoke-direct/range {v24 .. v24}, Landroid/content/ContentValues;-><init>()V
+    .end local v23    # "value":Landroid/content/ContentValues;
+    invoke-direct/range {v23 .. v23}, Landroid/content/ContentValues;-><init>()V
 
-    .restart local v24    # "value":Landroid/content/ContentValues;
-    const-string v3, "display_name"
+    .line 828
+    .restart local v23    # "value":Landroid/content/ContentValues;
+    const-string/jumbo v3, "display_name"
 
-    move-object/from16 v0, v24
+    move-object/from16 v0, v23
 
     invoke-virtual {v0, v3, v15}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
 
+    .line 829
     sget-object v3, Landroid/telephony/SubscriptionManager;->CONTENT_URI:Landroid/net/Uri;
 
+    .line 830
     new-instance v4, Ljava/lang/StringBuilder;
 
     invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v5, "_id="
+    const-string/jumbo v5, "_id="
 
     invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v4
 
+    .line 831
     const/4 v5, 0x0
 
-    aget v5, v22, v5
+    aget v5, v21, v5
 
     int-to-long v6, v5
 
@@ -2928,6 +3067,7 @@
 
     move-result-object v5
 
+    .line 830
     invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v4
@@ -2936,17 +3076,20 @@
 
     move-result-object v4
 
+    .line 831
     const/4 v5, 0x0
 
-    move-object/from16 v0, v24
+    .line 829
+    move-object/from16 v0, v23
 
     invoke-virtual {v2, v3, v0, v4, v5}, Landroid/content/ContentResolver;->update(Landroid/net/Uri;Landroid/content/ContentValues;Ljava/lang/String;[Ljava/lang/String;)I
 
+    .line 833
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord] sim name = "
+    const-string/jumbo v4, "[addSubInfoRecord] sim name = "
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2964,16 +3107,18 @@
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 837
     .end local v15    # "nameToSet":Ljava/lang/String;
-    .end local v19    # "simCarrierName":Ljava/lang/String;
-    :cond_14
+    .end local v18    # "simCarrierName":Ljava/lang/String;
+    :cond_12
     invoke-direct/range {p0 .. p0}, Lcom/android/internal/telephony/SubscriptionController;->updateAllDataConnectionTrackers()V
 
+    .line 839
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "[addSubInfoRecord]- info size="
+    const-string/jumbo v4, "[addSubInfoRecord]- info size="
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2996,38 +3141,26 @@
     move-object/from16 v0, p0
 
     invoke-virtual {v0, v3}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
-
-    sget-object v3, Lcom/android/internal/telephony/SubscriptionController;->sSlotIdxToSubId:Ljava/util/Map;
-
-    invoke-interface {v3}, Ljava/util/Map;->size()I
-
-    move-result v3
-
-    const/4 v4, 0x1
-
-    if-gt v3, v4, :cond_15
-
-    const/4 v3, 0x0
-
-    invoke-static {v3}, Lcom/android/internal/telephony/PhoneFactory;->setSMSPromptEnabled(Z)V
     :try_end_b
     .catchall {:try_start_b .. :try_end_b} :catchall_1
 
-    :cond_15
+    .line 842
     invoke-static {v12, v13}, Landroid/os/Binder;->restoreCallingIdentity(J)V
 
+    .line 844
     const/4 v3, 0x0
 
     return v3
 
-    .restart local v19    # "simCarrierName":Ljava/lang/String;
-    :cond_16
+    .line 824
+    .restart local v18    # "simCarrierName":Ljava/lang/String;
+    :cond_13
     :try_start_c
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v4, "CARD "
+    const-string/jumbo v4, "CARD "
 
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -3050,7 +3183,7 @@
     move-result-object v15
 
     .restart local v15    # "nameToSet":Ljava/lang/String;
-    goto/16 :goto_4
+    goto/16 :goto_3
 .end method
 
 .method public clearDefaultsForInactiveSubIds()V
@@ -4085,7 +4218,10 @@
     .locals 1
 
     .prologue
-    iget-object v0, p0, Lcom/android/internal/telephony/SubscriptionController;->mTelephonyManager:Landroid/telephony/TelephonyManager;
+    .line 673
+    invoke-static {}, Landroid/telephony/TelephonyManager;->getDefault()Landroid/telephony/TelephonyManager;
+
+    move-result-object v0
 
     invoke-virtual {v0}, Landroid/telephony/TelephonyManager;->getSimCount()I
 
@@ -5064,6 +5200,20 @@
     .locals 4
 
     .prologue
+    .line 1429
+    invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->isSingleSimActiveOnMSIM()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_0
+
+    .line 1431
+    sget v1, Lcom/android/internal/telephony/SubscriptionController;->mDefaultFallbackSubId:I
+
+    return v1
+
+    .line 1433
+    :cond_0
     iget-object v1, p0, Lcom/android/internal/telephony/SubscriptionController;->mContext:Landroid/content/Context;
 
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
@@ -5090,6 +5240,20 @@
     .locals 4
 
     .prologue
+    .line 1381
+    invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->isSingleSimActiveOnMSIM()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_0
+
+    .line 1383
+    sget v1, Lcom/android/internal/telephony/SubscriptionController;->mDefaultFallbackSubId:I
+
+    return v1
+
+    .line 1385
+    :cond_0
     iget-object v1, p0, Lcom/android/internal/telephony/SubscriptionController;->mContext:Landroid/content/Context;
 
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
@@ -5171,6 +5335,20 @@
     .locals 4
 
     .prologue
+    .line 1416
+    invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->isSingleSimActiveOnMSIM()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_0
+
+    .line 1418
+    sget v1, Lcom/android/internal/telephony/SubscriptionController;->mDefaultFallbackSubId:I
+
+    return v1
+
+    .line 1420
+    :cond_0
     iget-object v1, p0, Lcom/android/internal/telephony/SubscriptionController;->mContext:Landroid/content/Context;
 
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
@@ -7069,192 +7247,220 @@
 .end method
 
 .method public setDefaultDataSubId(I)V
-    .locals 11
+    .locals 12
     .param p1, "subId"    # I
 
     .prologue
-    const-string v9, "setDefaultDataSubId"
+    .line 1442
+    const-string/jumbo v10, "setDefaultDataSubId"
 
-    invoke-virtual {p0, v9}, Lcom/android/internal/telephony/SubscriptionController;->enforceModifyPhoneState(Ljava/lang/String;)V
+    invoke-virtual {p0, v10}, Lcom/android/internal/telephony/SubscriptionController;->enforceModifyPhoneState(Ljava/lang/String;)V
 
-    const-string v9, "persist.radio.flexmap_type"
+    .line 1444
+    const-string/jumbo v10, "persist.radio.flexmap_type"
 
-    const-string v10, "dds"
+    const-string/jumbo v11, "dds"
 
-    invoke-static {v9, v10}, Landroid/os/SystemProperties;->get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v10, v11}, Landroid/os/SystemProperties;->get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v1
 
+    .line 1446
     .local v1, "flexMapSupportType":Ljava/lang/String;
-    const v9, 0x7fffffff
+    const v10, 0x7fffffff
 
-    if-ne p1, v9, :cond_0
+    if-ne p1, v10, :cond_0
 
-    new-instance v9, Ljava/lang/RuntimeException;
+    .line 1447
+    new-instance v10, Ljava/lang/RuntimeException;
 
-    const-string v10, "setDefaultDataSubId called with DEFAULT_SUB_ID"
+    const-string/jumbo v11, "setDefaultDataSubId called with DEFAULT_SUB_ID"
 
-    invoke-direct {v9, v10}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
+    invoke-direct {v10, v11}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
 
-    throw v9
+    throw v10
 
+    .line 1449
     :cond_0
-    new-instance v9, Ljava/lang/StringBuilder;
+    new-instance v10, Ljava/lang/StringBuilder;
 
-    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v10}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v10, "[setDefaultDataSubId] subId="
+    const-string/jumbo v11, "[setDefaultDataSubId] subId="
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v10}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {p0, v9}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
+    invoke-virtual {p0, v10}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 1451
     invoke-static {}, Lcom/android/internal/telephony/ProxyController;->getInstance()Lcom/android/internal/telephony/ProxyController;
 
     move-result-object v6
 
+    .line 1452
     .local v6, "proxyController":Lcom/android/internal/telephony/ProxyController;
-    sget-object v9, Lcom/android/internal/telephony/SubscriptionController;->sProxyPhones:[Lcom/android/internal/telephony/PhoneProxy;
+    sget-object v10, Lcom/android/internal/telephony/SubscriptionController;->sProxyPhones:[Lcom/android/internal/telephony/PhoneProxy;
 
-    array-length v3, v9
+    array-length v3, v10
 
+    .line 1453
     .local v3, "len":I
-    new-instance v9, Ljava/lang/StringBuilder;
+    new-instance v10, Ljava/lang/StringBuilder;
 
-    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v10}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v10, "[setDefaultDataSubId] num phones="
+    const-string/jumbo v11, "[setDefaultDataSubId] num phones="
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    const-string v10, " dds flex map = "
+    const-string/jumbo v11, " dds flex map = "
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v10}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {p0, v9}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
+    invoke-virtual {p0, v10}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
+    .line 1456
     invoke-static {p1}, Landroid/telephony/SubscriptionManager;->isValidSubscriptionId(I)Z
 
-    move-result v9
+    move-result v10
 
-    if-eqz v9, :cond_3
+    if-eqz v10, :cond_3
 
-    const-string v9, "dds"
+    const-string/jumbo v10, "dds"
 
-    invoke-virtual {v1, v9}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    invoke-virtual {v1, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
-    move-result v9
+    move-result v10
 
-    if-eqz v9, :cond_3
+    if-eqz v10, :cond_3
 
+    .line 1458
     new-array v8, v3, [Landroid/telephony/RadioAccessFamily;
 
+    .line 1459
     .local v8, "rafs":[Landroid/telephony/RadioAccessFamily;
     const/4 v0, 0x0
 
+    .line 1460
     .local v0, "atLeastOneMatch":Z
+    const/4 v9, 0x0
+
+    .line 1461
+    .local v9, "slotId":I
     const/4 v5, 0x0
 
     .local v5, "phoneId":I
     :goto_0
     if-ge v5, v3, :cond_2
 
-    sget-object v9, Lcom/android/internal/telephony/SubscriptionController;->sProxyPhones:[Lcom/android/internal/telephony/PhoneProxy;
+    .line 1462
+    sget-object v10, Lcom/android/internal/telephony/SubscriptionController;->sProxyPhones:[Lcom/android/internal/telephony/PhoneProxy;
 
-    aget-object v4, v9, v5
+    aget-object v4, v10, v5
 
+    .line 1464
     .local v4, "phone":Lcom/android/internal/telephony/PhoneProxy;
     invoke-virtual {v4}, Lcom/android/internal/telephony/PhoneProxy;->getSubId()I
 
     move-result v2
 
+    .line 1465
     .local v2, "id":I
     if-ne v2, p1, :cond_1
 
+    .line 1467
     invoke-virtual {v6}, Lcom/android/internal/telephony/ProxyController;->getMaxRafSupported()I
 
     move-result v7
 
+    .line 1468
     .local v7, "raf":I
     const/4 v0, 0x1
 
+    .line 1469
+    move v9, v5
+
+    .line 1474
     :goto_1
-    new-instance v9, Ljava/lang/StringBuilder;
+    new-instance v10, Ljava/lang/StringBuilder;
 
-    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v10}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v10, "[setDefaultDataSubId] phoneId="
+    const-string/jumbo v11, "[setDefaultDataSubId] phoneId="
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    const-string v10, " subId="
+    const-string/jumbo v11, " subId="
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    const-string v10, " RAF="
+    const-string/jumbo v11, " RAF="
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v10, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v10}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v9
+    move-result-object v10
 
-    invoke-virtual {p0, v9}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
+    invoke-virtual {p0, v10}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
-    new-instance v9, Landroid/telephony/RadioAccessFamily;
+    .line 1475
+    new-instance v10, Landroid/telephony/RadioAccessFamily;
 
-    invoke-direct {v9, v5, v7}, Landroid/telephony/RadioAccessFamily;-><init>(II)V
+    invoke-direct {v10, v5, v7}, Landroid/telephony/RadioAccessFamily;-><init>(II)V
 
-    aput-object v9, v8, v5
+    aput-object v10, v8, v5
 
+    .line 1461
     add-int/lit8 v5, v5, 0x1
 
     goto :goto_0
 
+    .line 1472
     .end local v7    # "raf":I
     :cond_1
     invoke-virtual {v6}, Lcom/android/internal/telephony/ProxyController;->getMinRafSupported()I
@@ -7264,42 +7470,85 @@
     .restart local v7    # "raf":I
     goto :goto_1
 
+    .line 1477
     .end local v2    # "id":I
     .end local v4    # "phone":Lcom/android/internal/telephony/PhoneProxy;
     .end local v7    # "raf":I
     :cond_2
-    if-eqz v0, :cond_4
+    if-eqz v0, :cond_5
 
+    .line 1478
     invoke-virtual {v6, v8}, Lcom/android/internal/telephony/ProxyController;->setRadioCapability([Landroid/telephony/RadioAccessFamily;)Z
 
+    .line 1479
+    sget-object v10, Lcom/android/internal/telephony/SubscriptionController;->sCommandsInterfaces:[Lcom/android/internal/telephony/CommandsInterface;
+
+    if-eqz v10, :cond_3
+
+    .line 1480
+    sget-object v10, Lcom/android/internal/telephony/SubscriptionController;->sCommandsInterfaces:[Lcom/android/internal/telephony/CommandsInterface;
+
+    const/4 v11, 0x0
+
+    aget-object v10, v10, v11
+
+    const-string/jumbo v11, "sim2gsmonly"
+
+    invoke-interface {v10, v11}, Lcom/android/internal/telephony/CommandsInterface;->needsOldRilFeature(Ljava/lang/String;)Z
+
+    move-result v10
+
+    .line 1479
+    if-eqz v10, :cond_3
+
+    .line 1481
+    invoke-direct {p0, v9, p1}, Lcom/android/internal/telephony/SubscriptionController;->updateDataSubNetworkType(II)V
+
+    .line 1489
     .end local v0    # "atLeastOneMatch":Z
     .end local v5    # "phoneId":I
     .end local v8    # "rafs":[Landroid/telephony/RadioAccessFamily;
+    .end local v9    # "slotId":I
     :cond_3
     :goto_2
     invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->updateAllDataConnectionTrackers()V
 
-    iget-object v9, p0, Lcom/android/internal/telephony/SubscriptionController;->mContext:Landroid/content/Context;
+    .line 1491
+    invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->isSingleSimActiveOnMSIM()Z
 
-    invoke-virtual {v9}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+    move-result v10
 
-    move-result-object v9
+    if-nez v10, :cond_4
 
-    const-string v10, "multi_sim_data_call"
+    .line 1492
+    iget-object v10, p0, Lcom/android/internal/telephony/SubscriptionController;->mContext:Landroid/content/Context;
 
-    invoke-static {v9, v10, p1}, Landroid/provider/Settings$Global;->putInt(Landroid/content/ContentResolver;Ljava/lang/String;I)Z
+    invoke-virtual {v10}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
 
+    move-result-object v10
+
+    .line 1493
+    const-string/jumbo v11, "multi_sim_data_call"
+
+    .line 1492
+    invoke-static {v10, v11, p1}, Landroid/provider/Settings$Global;->putInt(Landroid/content/ContentResolver;Ljava/lang/String;I)Z
+
+    .line 1495
+    :cond_4
     invoke-direct {p0, p1}, Lcom/android/internal/telephony/SubscriptionController;->broadcastDefaultDataSubIdChanged(I)V
 
+    .line 1441
     return-void
 
+    .line 1484
     .restart local v0    # "atLeastOneMatch":Z
     .restart local v5    # "phoneId":I
     .restart local v8    # "rafs":[Landroid/telephony/RadioAccessFamily;
-    :cond_4
-    const-string v9, "[setDefaultDataSubId] no valid subId\'s found - not updating."
+    .restart local v9    # "slotId":I
+    :cond_5
+    const-string/jumbo v10, "[setDefaultDataSubId] no valid subId\'s found - not updating."
 
-    invoke-virtual {p0, v9}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
+    invoke-virtual {p0, v10}, Lcom/android/internal/telephony/SubscriptionController;->logdl(Ljava/lang/String;)V
 
     goto :goto_2
 .end method
@@ -7371,16 +7620,15 @@
 
     if-lt v2, v3, :cond_1
 
-    iget-object v3, p0, Lcom/android/internal/telephony/SubscriptionController;->mTelephonyManager:Landroid/telephony/TelephonyManager;
-
-    invoke-virtual {v3}, Landroid/telephony/TelephonyManager;->getSimCount()I
+    .line 1536
+    invoke-direct {p0}, Lcom/android/internal/telephony/SubscriptionController;->isSingleSimActiveOnMSIM()Z
 
     move-result v3
 
-    const/4 v4, 0x1
+    .line 1535
+    if-eqz v3, :cond_3
 
-    if-ne v3, v4, :cond_3
-
+    .line 1537
     :cond_1
     new-instance v3, Ljava/lang/StringBuilder;
 

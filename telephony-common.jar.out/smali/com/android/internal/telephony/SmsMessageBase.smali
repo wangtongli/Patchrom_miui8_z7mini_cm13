@@ -207,56 +207,156 @@
 .end method
 
 .method public static findNextUnicodePosition(IILjava/lang/CharSequence;)I
-    .locals 4
+    .locals 5
     .param p0, "currentPosition"    # I
     .param p1, "byteLimit"    # I
     .param p2, "msgBody"    # Ljava/lang/CharSequence;
 
     .prologue
-    div-int/lit8 v2, p1, 0x2
+    .line 369
+    div-int/lit8 v3, p1, 0x2
 
-    add-int/2addr v2, p0
+    add-int/2addr v3, p0
 
+    invoke-interface {p2}, Ljava/lang/CharSequence;->length()I
+
+    move-result v4
+
+    invoke-static {v3, v4}, Ljava/lang/Math;->min(II)I
+
+    move-result v2
+
+    .line 373
+    .local v2, "nextPos":I
     invoke-interface {p2}, Ljava/lang/CharSequence;->length()I
 
     move-result v3
 
-    invoke-static {v2, v3}, Ljava/lang/Math;->min(II)I
+    if-ge v2, v3, :cond_1
 
-    move-result v1
-
-    .local v1, "nextPos":I
-    invoke-interface {p2}, Ljava/lang/CharSequence;->length()I
-
-    move-result v2
-
-    if-ge v1, v2, :cond_0
-
+    .line 374
     invoke-static {}, Ljava/text/BreakIterator;->getCharacterInstance()Ljava/text/BreakIterator;
 
     move-result-object v0
 
+    .line 375
     .local v0, "breakIterator":Ljava/text/BreakIterator;
     invoke-interface {p2}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
 
-    move-result-object v2
+    move-result-object v3
 
-    invoke-virtual {v0, v2}, Ljava/text/BreakIterator;->setText(Ljava/lang/String;)V
+    invoke-virtual {v0, v3}, Ljava/text/BreakIterator;->setText(Ljava/lang/String;)V
 
-    invoke-virtual {v0, v1}, Ljava/text/BreakIterator;->isBoundary(I)Z
+    .line 376
+    invoke-virtual {v0, v2}, Ljava/text/BreakIterator;->isBoundary(I)Z
 
-    move-result v2
+    move-result v3
 
-    if-nez v2, :cond_0
+    if-nez v3, :cond_1
 
-    invoke-virtual {v0, v1}, Ljava/text/BreakIterator;->preceding(I)I
+    .line 377
+    invoke-virtual {v0, v2}, Ljava/text/BreakIterator;->preceding(I)I
 
     move-result v1
 
-    .end local v0    # "breakIterator":Ljava/text/BreakIterator;
+    .line 378
+    .local v1, "breakPos":I
+    :goto_0
+    add-int/lit8 v3, v1, 0x4
+
+    if-gt v3, v2, :cond_0
+
+    .line 380
+    invoke-static {p2, v1}, Ljava/lang/Character;->codePointAt(Ljava/lang/CharSequence;I)I
+
+    move-result v3
+
+    .line 379
+    invoke-static {v3}, Lcom/android/internal/telephony/SmsMessageBase;->isRegionalIndicatorSymbol(I)Z
+
+    move-result v3
+
+    .line 378
+    if-eqz v3, :cond_0
+
+    .line 382
+    add-int/lit8 v3, v1, 0x2
+
+    invoke-static {p2, v3}, Ljava/lang/Character;->codePointAt(Ljava/lang/CharSequence;I)I
+
+    move-result v3
+
+    .line 381
+    invoke-static {v3}, Lcom/android/internal/telephony/SmsMessageBase;->isRegionalIndicatorSymbol(I)Z
+
+    move-result v3
+
+    .line 378
+    if-eqz v3, :cond_0
+
+    .line 384
+    add-int/lit8 v1, v1, 0x4
+
+    goto :goto_0
+
+    .line 386
     :cond_0
-    return v1
+    if-le v1, p0, :cond_2
+
+    .line 387
+    move v2, v1
+
+    .line 395
+    .end local v0    # "breakIterator":Ljava/text/BreakIterator;
+    .end local v1    # "breakPos":I
+    :cond_1
+    :goto_1
+    return v2
+
+    .line 388
+    .restart local v0    # "breakIterator":Ljava/text/BreakIterator;
+    .restart local v1    # "breakPos":I
+    :cond_2
+    add-int/lit8 v3, v2, -0x1
+
+    invoke-interface {p2, v3}, Ljava/lang/CharSequence;->charAt(I)C
+
+    move-result v3
+
+    invoke-static {v3}, Ljava/lang/Character;->isHighSurrogate(C)Z
+
+    move-result v3
+
+    if-eqz v3, :cond_1
+
+    .line 390
+    add-int/lit8 v2, v2, -0x1
+
+    goto :goto_1
 .end method
+
+.method private static isRegionalIndicatorSymbol(I)Z
+    .locals 2
+    .param p0, "codepoint"    # I
+
+    .prologue
+    const/4 v0, 0x0
+
+    .line 357
+    const v1, 0x1f1e6
+
+    if-gt v1, p0, :cond_0
+
+    const v1, 0x1f1ff
+
+    if-gt p0, v1, :cond_0
+
+    const/4 v0, 0x1
+
+    :cond_0
+    return v0
+.end method
+
 
 # virtual methods
 .method protected extractEmailAddressFromMessageBody()V
