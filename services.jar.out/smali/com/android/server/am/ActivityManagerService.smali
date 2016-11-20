@@ -23267,6 +23267,31 @@
     .end local v38    # "providerRunning":Z
     .restart local v4    # "cpr":Lcom/android/server/am/ContentProviderRecord;
     :cond_2
+    invoke-static/range {p5 .. p5}, Lmiui/securityspace/XSpaceUserHandle;->isXSpaceUserId(I)Z
+
+    move-result v5
+
+    if-eqz v5, :cond_miui_3
+
+    move-object/from16 v0, p0
+
+    move-object/from16 v1, p2
+
+    move/from16 v2, p5
+
+    invoke-direct {v0, v1, v2}, Lcom/android/server/am/ActivityManagerService;->getProviderInfoLocked(Ljava/lang/String;I)Landroid/content/pm/ProviderInfo;
+
+    move-result-object v5
+
+    if-nez v5, :cond_miui_3
+
+    const/16 p5, 0x0
+
+    const/16 v21, 0x0
+
+    goto :goto_0
+
+    :cond_miui_3
     const/4 v4, 0x0
 
     .line 9850
@@ -23620,6 +23645,32 @@
     move-wide/from16 v1, v40
 
     invoke-direct {v0, v1, v2, v5}, Lcom/android/server/am/ActivityManagerService;->checkTime(JLjava/lang/String;)V
+
+    if-nez v6, :cond_miui_c
+    
+    invoke-static/range {p5 .. p5}, Lmiui/securityspace/XSpaceUserHandle;->isXSpaceUserId(I)Z
+
+    move-result v5
+
+    if-eqz v5, :cond_miui_c
+
+    const/16 p5, 0x0
+    
+    move/from16 v1, p5
+    
+    invoke-static {}, Landroid/app/AppGlobals;->getPackageManager()Landroid/content/pm/IPackageManager;
+
+    move-result-object v5
+
+    const/16 v10, 0xc00
+
+    move-object/from16 v0, p2
+    
+    invoke-interface {v5, v0, v10, v1}, Landroid/content/pm/IPackageManager;->resolveContentProvider(Ljava/lang/String;II)Landroid/content/pm/ProviderInfo;
+   
+    move-result-object v6
+    
+    :cond_miui_c
     :try_end_3
     .catch Landroid/os/RemoteException; {:try_start_3 .. :try_end_3} :catch_5
     .catchall {:try_start_3 .. :try_end_3} :catchall_0
@@ -32169,6 +32220,15 @@
     aput v4, v8, v5
 
     .line 3523
+ 
+    invoke-static {v6}, Landroid/os/UserHandle;->getUserId(I)I
+
+    move-result v5
+
+    invoke-static {v5, v8}, Lcom/android/server/am/ActivityManagerServiceInjector;->computeGids(I[I)[I
+
+    move-result-object v8
+
     invoke-static {v6}, Landroid/os/UserHandle;->getUserId(I)I
 
     move-result v4
