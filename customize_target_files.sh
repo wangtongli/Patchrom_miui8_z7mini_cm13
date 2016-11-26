@@ -13,3 +13,5 @@ then
 fi
 
 #cp -f other/file_contexts out/target_files/META/
+echo "fix Message sound"
+mv -f out/ZIP/system/media/audio/ui/Message* out/ZIP/system/media/audio/notifications

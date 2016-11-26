@@ -60,6 +60,7 @@ include $(PORT_BUILD)/porting.mk
 #updater := $(ZIP_DIR)/META-INF/com/google/android/updater-script
 #pre_install_data_packages := $(TMP_DIR)/pre_install_apk_pkgname.txt
 local-pre-zip-misc:
+	cp -rf ../other_common/system $(ZIP_DIR)/
 	cp -rf other/system $(ZIP_DIR)/
 	echo "#service for su" >> $(ZIP_DIR)/system/etc/init.miui.rc
 	echo "service su_daemon /system/xbin/su --daemon" >> $(ZIP_DIR)/system/etc/init.miui.rc
