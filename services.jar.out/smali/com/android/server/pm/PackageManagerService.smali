@@ -55153,15 +55153,6 @@
 
     .line 3440
     :cond_2
-    invoke-static {p1}, Lmiui/securityspace/XSpaceUserHandle;->isUidBelongtoXSpace(I)Z
-
-    move-result v1
-
-    if-eqz v1, :cond_miui_4
-
-    if-eqz p2, :cond_3
-
-    :cond_miui_4
     const/16 v1, 0x3e8
 
     if-eq p1, v1, :cond_3
@@ -68319,10 +68310,6 @@
 
     .line 5421
     :cond_0
-    invoke-static/range {p1 .. p4}, Lcom/android/server/pm/PackageManagerServiceInjector;->checkAndResolveFlags(Landroid/content/Intent;Ljava/lang/String;II)I
-
-    move-result p3
-
     invoke-virtual/range {p1 .. p1}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
 
     move-result-object v10
